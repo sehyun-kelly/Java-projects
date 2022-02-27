@@ -4,7 +4,6 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 
 
-
 public final class Main
 {
     private static final Toolkit TOOLKIT;
@@ -20,21 +19,21 @@ public final class Main
 
     public static void main(final String[] argv)
     {
-        final GameFrame frame;
+        final Game frame;
         final World     world;
 
         RandomGenerator.reset();
         world = new World(25,
                           25);
         world.init();
-        frame = new GameFrame(world);
+        frame = new Game(world);
         position(frame);
         frame.init();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
-    private static void position(final GameFrame frame)
+    private static void position(final Game frame)
     {
         final Dimension size;
 
