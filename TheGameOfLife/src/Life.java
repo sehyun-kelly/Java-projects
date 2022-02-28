@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,9 +29,23 @@ public abstract class Life {
         return this.currentCell;
     }
 
-    public abstract Set<Cell> possiblePaths();
+    public void setAlive(boolean isAlive){
+        this.alive = isAlive;
+    }
 
-    public abstract void action(Neighbour neighbour);
+    public void kill(){
+        this.alive = false;
+        this.currentCell.setBackground(Color.WHITE);
+        this.currentCell.setPresence((Life)null);
+    }
+
+    public void update(Cell nextCell, Color color){
+        nextCell.setBackground(color);
+        nextCell.setPresence(this);
+
+        this.currentCell.setBackground(Color.WHITE);
+        this.currentCell.setPresence((Life)null);
+    }
 
     public void paintBackground(Graphics g){
         if(currentCell != null){
@@ -38,10 +53,8 @@ public abstract class Life {
         }
     }
 
-    public void paintReset(Graphics g){
-        if(currentCell != null){
-            this.currentCell.setBackground(Color.WHITE);
-        }
-    }
+    public abstract ArrayList<Neighbour> possiblePaths();
+
+    public abstract void action();
 
 }

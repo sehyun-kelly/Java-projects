@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Game extends JFrame {
     private World world;
@@ -10,15 +12,22 @@ public class Game extends JFrame {
 
     public void init(){
         int rows = this.world.getRows();
+        System.out.println("rows: " + rows);
         int cols = this.world.getCols();
+        System.out.println("cols: " + cols);
 
         setLayout(new GridLayout(rows, cols));
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++)
-                add(this.world.getGrid(row, col));
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++)
+                add(this.world.getGrid(i, j));
         }
 
-        //addMouseListener(new TurnListener(this));
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                world.turns();
+            }
+        });
     }
 
     public World getWorld() {

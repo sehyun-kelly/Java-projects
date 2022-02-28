@@ -1,5 +1,6 @@
 import java.util.Set;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 public class World{
     private static final int TOTAL = 100;
@@ -50,20 +51,53 @@ public class World{
         }
     }
 
-    public static Set<Cell> computeNeighbour(Cell cell){
-        Set<Cell> neighbourCells = new HashSet<>();
-        int x = cell.getX();
-        int y = cell.getY();
+    public static ArrayList<Neighbour> computeNeighbour(Cell cell){
+        ArrayList<Neighbour> neighbourCells = new ArrayList<>();
+        int x = cell.returnX();
+        int y = cell.returnY();
 
         for(int i = x - 1; i < x + 2; i++){
             for(int j = y - 1; j < y + 2; j++){
+
                 if(i >= 0 && i <= 24 && j >= 0 && j <=24){
-                    neighbourCells.add(grid[i][j]);
+                    Neighbour neighbour = new Neighbour(i, j);
+                    if(i != x || j != y){
+                        neighbourCells.add(neighbour);
+                    }
                 }
             }
         }
 
         return neighbourCells;
+    }
+
+    public void turns(){
+        ArrayList<Life> lives = getAliveLife();
+
+        for(int i = 0; i < lives.size(); i++){
+            Life currentLife = lives.get(i);
+            if(currentLife.isAlive()){
+                currentLife.action();
+            }else{
+                currentLife.setAlive(false);
+            }
+        }
+    }
+
+    private ArrayList<Life> getAliveLife(){
+        ArrayList<Life> lives = new ArrayList<>();
+        Life currentLife = null;
+
+        for(int i = 0; i < this.grid.length; i++){
+            for(int j = 0; j < this.grid[i].length; j++){
+                currentLife = grid[i][j].getPresence();
+                if(currentLife != null){
+                    lives.add(currentLife);
+                }
+            }
+        }
+
+        return lives;
     }
 
 

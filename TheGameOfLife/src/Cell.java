@@ -34,12 +34,12 @@ public class Cell extends JPanel {
         return this.presence;
     }
 
-    public void setNeighbour(Neighbour neighbour) {
-        this.neighbour = neighbour;
+    public int returnX() {
+        return this.x;
     }
 
-    public Neighbour getNeighbour(){ return this.neighbour; }
-
-
+    public int returnY() {
+        return this.y;
+    }
 
 }

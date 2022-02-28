@@ -1,13 +1,17 @@
-import java.util.Set;
-
 public class Neighbour {
-    public Set<Cell> cells;
+    public int x;
+    public int y;
 
-    public Neighbour(Set<Cell> cells){
-        this.cells = cells;
+    public Neighbour(int x, int y){
+        this.x = x;
+        this.y = y;
     }
 
-    public Set<Cell> getCells() {
-        return this.cells;
+    public int getNeighbourX(){
+        return this.x;
+    }
+
+    public int getNeighbourY(){
+        return this.y;
     }
 }
