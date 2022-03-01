@@ -54,7 +54,7 @@ public class Herbivore extends Life{
 
     private void kill(){
         this.alive = false;
-        this.currentCell.setPresence((Life)null);
+        this.currentCell.setPresence(null);
         this.color = Color.WHITE;
     }
 
@@ -70,10 +70,11 @@ public class Herbivore extends Life{
         this.daysWithoutFood = daysWithoutFood;
     }
 
+
     private void eat(Cell nextCell){
-        if(nextCell.getPresence() != null && nextCell.getPresence().alive == true){
+        if(nextCell.getPresence() != null && nextCell.getPresence().isAlive()){
             nextCell.getPresence().setAlive(false);
-            nextCell.setPresence((Life)null);
+            nextCell.setPresence(null);
         }
 
         Life life = new Herbivore(nextCell);
