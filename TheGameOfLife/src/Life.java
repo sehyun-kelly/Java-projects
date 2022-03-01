@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public abstract class Life {
     protected Color color;
@@ -25,36 +24,34 @@ public abstract class Life {
         return this.alive;
     }
 
-    public Cell getCurrentCell(){
-        return this.currentCell;
-    }
-
     public void setAlive(boolean isAlive){
         this.alive = isAlive;
     }
 
-    public void kill(){
-        this.alive = false;
-        this.currentCell.setBackground(Color.WHITE);
-        this.currentCell.setPresence((Life)null);
+    public void update(){
+        this.currentCell.getPresence().setAlive(false);
+        this.currentCell.setPresence(null);
     }
 
-    public void update(Cell nextCell, Color color){
-        nextCell.setBackground(color);
-        nextCell.setPresence(this);
+    public Cell chooseCell(ArrayList<Neighbour> path){
+        if(path.size() != 0){
+            Cell nextPosition = null;
+            List<Neighbour> cellList = new ArrayList<>();
+            cellList.addAll(path);
 
-        this.currentCell.setBackground(Color.WHITE);
-        this.currentCell.setPresence((Life)null);
-    }
+            int value = RandomGenerator.nextNumber(cellList.size());
 
-    public void paintBackground(Graphics g){
-        if(currentCell != null){
-            this.currentCell.setBackground(this.color);
+            nextPosition = World.grid[cellList.get(value).getNeighbourX()][cellList.get(value).getNeighbourY()];
+
+            return nextPosition;
+        }else {
+            return currentCell;
         }
     }
 
     public abstract ArrayList<Neighbour> possiblePaths();
 
     public abstract void action();
+
 
 }

@@ -1,18 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Graphics2D;
-
 
 public class Cell extends JPanel {
     public int x;
     public int y;
     public Life presence;
-    public Neighbour neighbour;
 
     public Cell(int x, int y){
         this.x = x;
         this.y = y;
-        setBackground(Color.WHITE);
     }
 
     public void paint(Graphics g) {
@@ -21,8 +17,17 @@ public class Cell extends JPanel {
 
         super.paint(g);
         g.drawRect(0, 0, width, height);
-        if(this.presence != null){
-            this.presence.paintBackground(g);
+        paintBackground();
+    }
+
+    public void paintBackground(){
+        if(this.presence != null && this.presence.alive == false){
+            this.setPresence(null);
+            this.setBackground(Color.WHITE);
+        }else if (this.presence == null){
+            this.setBackground(Color.WHITE);
+        }else if(this.presence != null && this.presence.alive == true){
+            this.setBackground(this.presence.color);
         }
     }
 

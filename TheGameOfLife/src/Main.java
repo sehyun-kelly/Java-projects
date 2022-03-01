@@ -23,8 +23,8 @@ public final class Main
         final World     world;
 
         RandomGenerator.reset();
-        world = new World(25,
-                          25);
+        world = new World(5,
+                          5);
         world.init();
         frame = new Game(world);
         position(frame);

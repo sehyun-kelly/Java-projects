@@ -1,5 +1,5 @@
 import javax.swing.*;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -12,9 +12,7 @@ public class Game extends JFrame {
 
     public void init(){
         int rows = this.world.getRows();
-        System.out.println("rows: " + rows);
         int cols = this.world.getCols();
-        System.out.println("cols: " + cols);
 
         setLayout(new GridLayout(rows, cols));
         for (int i = 0; i < rows; i++) {
@@ -25,9 +23,29 @@ public class Game extends JFrame {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                world.turns();
+                nextTurn();
             }
         });
+    }
+
+    public void nextTurn() {
+        int rows = this.world.getRows();
+        int cols = this.world.getCols();
+
+        world.turns();
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                this.world.getGrid(i, j).paintBackground();
+//                if(this.world.getGrid(i, j).getPresence() != null) {
+//                    if (this.world.getGrid(i, j).getPresence().getColor() == Color.YELLOW) {
+//                        System.out.println(i + ", " + j + ": Yellow");
+//                    } else if (this.world.getGrid(i, j).getPresence().getColor() == Color.GREEN) {
+//                        System.out.println(i + ", " + j + ": Green");
+//                    }
+//                }
+            }
+        }
     }
 
     public World getWorld() {

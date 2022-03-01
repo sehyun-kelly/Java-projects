@@ -1,13 +1,11 @@
-import java.util.Set;
-import java.util.HashSet;
 import java.util.ArrayList;
 
 public class World{
-    private static final int TOTAL = 100;
+    private static final int TOTAL = 99;
     private static final int HERBIVORE_VALUE = 85;
     private static final int PLANT_VALUE = 65;
-    private int rows;
-    private int cols;
+    public static int rows;
+    public static int cols;
     public static Cell[][] grid;
 
     public World(int rows, int cols){
@@ -44,10 +42,8 @@ public class World{
 
         if(value >= HERBIVORE_VALUE){
             cell.setPresence(new Herbivore(cell));
-        }else if (value >= PLANT_VALUE){
+        }else if (value >= PLANT_VALUE && value < HERBIVORE_VALUE){
             cell.setPresence(new Plant(cell));
-        }else {
-            cell.setPresence(null);
         }
     }
 
@@ -59,7 +55,7 @@ public class World{
         for(int i = x - 1; i < x + 2; i++){
             for(int j = y - 1; j < y + 2; j++){
 
-                if(i >= 0 && i <= 24 && j >= 0 && j <=24){
+                if(i >= 0 && i <= (World.rows - 1) && j >= 0 && j <= (World.cols - 1)){
                     Neighbour neighbour = new Neighbour(i, j);
                     if(i != x || j != y){
                         neighbourCells.add(neighbour);
@@ -76,7 +72,7 @@ public class World{
 
         for(int i = 0; i < lives.size(); i++){
             Life currentLife = lives.get(i);
-            if(currentLife.isAlive()){
+            if(currentLife != null && currentLife.isAlive()){
                 currentLife.action();
             }else{
                 currentLife.setAlive(false);

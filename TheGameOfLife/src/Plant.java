@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class Plant extends Life {
 
@@ -11,11 +10,46 @@ public class Plant extends Life {
 
     @Override
     public ArrayList<Neighbour> possiblePaths() {
-        return null;
+        ArrayList<Neighbour> newPath = new ArrayList<>();
+        int nullCount = 0;
+        int plantCount = 0;
+
+        ArrayList<Neighbour> neighbouringCells = World.computeNeighbour(super.currentCell);
+
+        for(int i = 0; i < neighbouringCells.size(); i++){
+            int x = neighbouringCells.get(i).getNeighbourX();
+            int y = neighbouringCells.get(i).getNeighbourY();
+
+            Cell nextCell = World.grid[x][y];
+
+            if(nextCell.getPresence() == null){
+                nullCount++;
+            }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor()!= Color.GREEN){
+                plantCount++;
+            }
+        }
+
+        if(nullCount >= 3 && plantCount == 4){
+            for(int i = 0; i < neighbouringCells.size(); i++){
+                int x = neighbouringCells.get(i).getNeighbourX();
+                int y = neighbouringCells.get(i).getNeighbourY();
+                Cell nextCell = World.grid[x][y];
+
+                if(nextCell.getPresence() == null){
+                    newPath.add(neighbouringCells.get(i));
+                }
+            }
+        }
+
+        return newPath;
     }
 
     @Override
     public void action() {
-        System.out.println("I'm a plant");
+        Cell nextCell = chooseCell(possiblePaths());
+
+        if(nextCell.getPresence() == null){
+            update();
+        }
     }
 }

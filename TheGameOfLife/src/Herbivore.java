@@ -1,8 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Herbivore extends Life{
     private final int maxDays = 5;
@@ -15,43 +13,23 @@ public class Herbivore extends Life{
 
     @Override
     public ArrayList<Neighbour> possiblePaths() {
-        System.out.println("possiblepaths");
         ArrayList<Neighbour> newPath = new ArrayList<>();
 
-        ArrayList<Neighbour> neighbouringCells = World.computeNeighbour(super.getCurrentCell());
-        System.out.println("current cell: " + super.getCurrentCell().returnX() + " " + super.getCurrentCell().returnY());
+        ArrayList<Neighbour> neighbouringCells = World.computeNeighbour(super.currentCell);
 
         for(int i = 0; i < neighbouringCells.size(); i++){
             int x = neighbouringCells.get(i).getNeighbourX();
             int y = neighbouringCells.get(i).getNeighbourY();
 
             Cell nextCell = World.grid[x][y];
-            System.out.println(i + ": " + x + ", " + y);
             if(nextCell.getPresence() == null){
                 newPath.add(neighbouringCells.get(i));
             }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor()!= Color.yellow){
                 newPath.add(neighbouringCells.get(i));
-                System.out.println("added to newpath: x: " + x + ", y: " + y);
             }
         }
 
-        System.out.println("size: " + newPath.size());
-
         return newPath;
-    }
-
-    private Cell chooseCell(ArrayList<Neighbour> path){
-        System.out.println("choosecell");
-        Cell nextPosition = null;
-        List<Neighbour> cellList = new ArrayList<>();
-        cellList.addAll(path);
-
-        int value = RandomGenerator.nextNumber(cellList.size());
-
-        nextPosition = World.grid[cellList.get(value).getNeighbourX()][cellList.get(value).getNeighbourY()];
-
-        return nextPosition;
-
     }
 
     @Override
@@ -63,14 +41,45 @@ public class Herbivore extends Life{
             if(daysWithoutFood == maxDays){
                 kill();
             } else{
-                update(nextCell, Color.yellow);
+                move(nextCell);
+                update();
             }
         }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN){
-            update(nextCell, Color.yellow);
             daysWithoutFood = 0;
+            eat(nextCell);
+            update();
         }
     }
 
+    private void kill(){
+        this.alive = false;
+        this.currentCell.setPresence((Life)null);
+        this.color = Color.WHITE;
+    }
 
+    private void move(Cell nextCell){
+        Herbivore herbivore = new Herbivore(nextCell);
+        herbivore.setDaysWithoutFood(daysWithoutFood);
+        System.out.println("Days Without Food info sent: " + daysWithoutFood);
+        nextCell.setPresence(herbivore);
+        nextCell.getPresence().setColor(Color.YELLOW);
+        nextCell.getPresence().setAlive(true);
+    }
+
+    private void setDaysWithoutFood(int daysWithoutFood){
+        this.daysWithoutFood = daysWithoutFood;
+    }
+
+    private void eat(Cell nextCell){
+        if(nextCell.getPresence() != null && nextCell.getPresence().alive == true){
+            nextCell.getPresence().setAlive(false);
+            nextCell.setPresence((Life)null);
+        }
+
+        Life life = new Herbivore(nextCell);
+        nextCell.setPresence(life);
+        nextCell.getPresence().setColor(Color.YELLOW);
+        nextCell.getPresence().setAlive(true);
+    }
 
 }
