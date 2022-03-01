@@ -37,18 +37,7 @@ public class Game extends JFrame {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 this.world.getGrid(i, j).paintBackground();
-//                if(this.world.getGrid(i, j).getPresence() != null) {
-//                    if (this.world.getGrid(i, j).getPresence().getColor() == Color.YELLOW) {
-//                        System.out.println(i + ", " + j + ": Yellow");
-//                    } else if (this.world.getGrid(i, j).getPresence().getColor() == Color.GREEN) {
-//                        System.out.println(i + ", " + j + ": Green");
-//                    }
-//                }
             }
         }
-    }
-
-    public World getWorld() {
-        return this.world;
     }
 }

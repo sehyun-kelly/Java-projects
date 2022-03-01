@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Plant extends Life {
 
@@ -14,7 +13,7 @@ public class Plant extends Life {
         int nullCount = 0;
         int plantCount = 0;
 
-        ArrayList<Neighbour> neighbouringCells = World.computeNeighbour(super.currentCell);
+        ArrayList<Neighbour> neighbouringCells = super.currentCell.computeNeighbour();
 
         for(int i = 0; i < neighbouringCells.size(); i++){
             int x = neighbouringCells.get(i).getNeighbourX();
@@ -24,7 +23,7 @@ public class Plant extends Life {
 
             if(nextCell.getPresence() == null){
                 nullCount++;
-            }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor()!= Color.GREEN){
+            }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN){
                 plantCount++;
             }
         }
@@ -47,9 +46,15 @@ public class Plant extends Life {
     @Override
     public void action() {
         Cell nextCell = chooseCell(possiblePaths());
-
-        if(nextCell.getPresence() == null){
-            update();
+        if(nextCell != null){
+            seed(nextCell);
         }
+    }
+
+    private void seed(Cell nextCell){
+        Life life = new Plant(nextCell);
+        nextCell.setPresence(life);
+        nextCell.getPresence().setColor(Color.GREEN);
+        nextCell.getPresence().setAlive(true);
     }
 }

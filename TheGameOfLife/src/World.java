@@ -47,26 +47,6 @@ public class World{
         }
     }
 
-    public static ArrayList<Neighbour> computeNeighbour(Cell cell){
-        ArrayList<Neighbour> neighbourCells = new ArrayList<>();
-        int x = cell.returnX();
-        int y = cell.returnY();
-
-        for(int i = x - 1; i < x + 2; i++){
-            for(int j = y - 1; j < y + 2; j++){
-
-                if(i >= 0 && i <= (World.rows - 1) && j >= 0 && j <= (World.cols - 1)){
-                    Neighbour neighbour = new Neighbour(i, j);
-                    if(i != x || j != y){
-                        neighbourCells.add(neighbour);
-                    }
-                }
-            }
-        }
-
-        return neighbourCells;
-    }
-
     public void turns(){
         ArrayList<Life> lives = getAliveLife();
 

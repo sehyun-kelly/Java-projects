@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Cell extends JPanel {
     public int x;
@@ -31,20 +32,29 @@ public class Cell extends JPanel {
         }
     }
 
+    public ArrayList<Neighbour> computeNeighbour(){
+        ArrayList<Neighbour> neighbourCells = new ArrayList<>();
+
+        for(int i = this.x - 1; i < this.x + 2; i++){
+            for(int j = this.y - 1; j < this.y + 2; j++){
+                if(i >= 0 && i <= (World.rows - 1) && j >= 0 && j <= (World.cols - 1)){
+                    Neighbour neighbour = new Neighbour(i, j);
+                    if(i != this.x || j != this.y){
+                        neighbourCells.add(neighbour);
+                    }
+                }
+            }
+        }
+
+        return neighbourCells;
+    }
+
     public void setPresence(Life life){
         this.presence = life;
     }
 
     public Life getPresence(){
         return this.presence;
-    }
-
-    public int returnX() {
-        return this.x;
-    }
-
-    public int returnY() {
-        return this.y;
     }
 
 }

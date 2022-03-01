@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Herbivore extends Life{
     private final int maxDays = 5;
@@ -15,7 +14,7 @@ public class Herbivore extends Life{
     public ArrayList<Neighbour> possiblePaths() {
         ArrayList<Neighbour> newPath = new ArrayList<>();
 
-        ArrayList<Neighbour> neighbouringCells = World.computeNeighbour(super.currentCell);
+        ArrayList<Neighbour> neighbouringCells = super.currentCell.computeNeighbour();
 
         for(int i = 0; i < neighbouringCells.size(); i++){
             int x = neighbouringCells.get(i).getNeighbourX();
@@ -36,18 +35,20 @@ public class Herbivore extends Life{
     public void action() {
         Cell nextCell = chooseCell(possiblePaths());
 
-        if(nextCell.getPresence() == null){
-            daysWithoutFood++;
-            if(daysWithoutFood == maxDays){
-                kill();
-            } else{
-                move(nextCell);
+        if(nextCell != null){
+            if(nextCell.getPresence() == null){
+                daysWithoutFood++;
+                if(daysWithoutFood == maxDays){
+                    kill();
+                } else{
+                    move(nextCell);
+                    update();
+                }
+            }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN){
+                daysWithoutFood = 0;
+                eat(nextCell);
                 update();
             }
-        }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN){
-            daysWithoutFood = 0;
-            eat(nextCell);
-            update();
         }
     }
 
@@ -60,7 +61,6 @@ public class Herbivore extends Life{
     private void move(Cell nextCell){
         Herbivore herbivore = new Herbivore(nextCell);
         herbivore.setDaysWithoutFood(daysWithoutFood);
-        System.out.println("Days Without Food info sent: " + daysWithoutFood);
         nextCell.setPresence(herbivore);
         nextCell.getPresence().setColor(Color.YELLOW);
         nextCell.getPresence().setAlive(true);

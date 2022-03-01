@@ -45,7 +45,7 @@ public abstract class Life {
 
             return nextPosition;
         }else {
-            return currentCell;
+            return null;
         }
     }
 
