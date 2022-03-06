@@ -22,12 +22,12 @@ public class Cell extends JPanel {
     }
 
     public void paintBackground(){
-        if(this.presence != null && this.presence.alive == false){
+        if(this.presence != null && !this.presence.alive){
             this.setPresence(null);
             this.setBackground(Color.WHITE);
         }else if (this.presence == null){
             this.setBackground(Color.WHITE);
-        }else if(this.presence != null && this.presence.alive == true){
+        }else {
             this.setBackground(this.presence.color);
         }
     }

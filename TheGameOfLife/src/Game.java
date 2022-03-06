@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class Game extends JFrame {
     private World world;
@@ -34,10 +35,21 @@ public class Game extends JFrame {
 
         world.turns();
 
+//        ArrayList<Life> lives = world.firstTurn();
+
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 this.world.getGrid(i, j).paintBackground();
             }
         }
+        System.out.println("---------------turn over-----------------");
+
+//        world.secondTurn(lives);
+//
+//        for (int i = 0; i < rows; i++) {
+//            for (int j = 0; j < cols; j++) {
+//                this.world.getGrid(i, j).paintBackground();
+//            }
+//        }
     }
 }

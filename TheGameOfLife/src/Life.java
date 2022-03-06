@@ -36,12 +36,10 @@ public abstract class Life {
     public Cell chooseCell(ArrayList<Neighbour> path){
         if(path.size() != 0){
             Cell nextPosition = null;
-            List<Neighbour> cellList = new ArrayList<>();
-            cellList.addAll(path);
 
-            int value = RandomGenerator.nextNumber(cellList.size());
+            int value = RandomGenerator.nextNumber(path.size());
 
-            nextPosition = World.grid[cellList.get(value).getNeighbourX()][cellList.get(value).getNeighbourY()];
+            nextPosition = World.grid[path.get(value).getNeighbourX()][path.get(value).getNeighbourY()];
 
             return nextPosition;
         }else {

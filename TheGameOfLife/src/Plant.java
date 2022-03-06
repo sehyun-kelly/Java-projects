@@ -3,6 +3,8 @@ import java.util.ArrayList;
 
 public class Plant extends Life {
 
+    public boolean isSeed = false;
+
     public Plant(Cell cell){
         super(cell, Color.GREEN);
     }
@@ -56,5 +58,10 @@ public class Plant extends Life {
         nextCell.setPresence(life);
         nextCell.getPresence().setColor(Color.GREEN);
         nextCell.getPresence().setAlive(true);
+        ((Plant)nextCell.getPresence()).setSeed(true);
+    }
+
+    public void setSeed(boolean isSeed){
+        this.isSeed = isSeed;
     }
 }
