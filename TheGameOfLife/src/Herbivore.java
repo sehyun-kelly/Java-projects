@@ -1,109 +1,124 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Herbivore extends Life{
-    private final int maxDays = 5;
+public class Herbivore extends Life {
+    /**Maximum days that Herbivore can live without eating Plant*/
+    private final int MAX_DAYS = 5;
 
+    /**Count of days passed without eating Plant*/
     public int daysWithoutFood = 0;
 
+    /**The index of this Herbivore*/
     public int herbIndex;
 
-    public Herbivore(Cell cell){
+    /**
+     * Herbivore constructor
+     * @param cell Cell
+     */
+    public Herbivore(Cell cell) {
         super(cell, Color.yellow);
     }
 
-    public void setHerbIndex(int x){
+    /**
+     * Sets the index of this Herbivore
+     * @param x int
+     */
+    public void setHerbIndex(int x) {
         this.herbIndex = x;
     }
 
+    /**
+     * Calculates possible paths that this Herbivore can move into
+     * @return the list of Neighbours
+     */
     @Override
     public ArrayList<Neighbour> possiblePaths() {
-        ArrayList<Neighbour> newPath = super.currentCell.computeNeighbour();
-
-//        ArrayList<Neighbour> neighbouringCells = super.currentCell.computeNeighbour();
-
-//        for(int i = 0; i < neighbouringCells.size(); i++){
-//            int x = neighbouringCells.get(i).getNeighbourX();
-//            int y = neighbouringCells.get(i).getNeighbourY();
-//
-//            Cell nextCell = World.grid[x][y];
-//            if(nextCell.getPresence() == null){
-//                newPath.add(neighbouringCells.get(i));
-//            }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor()!= Color.yellow){
-//                newPath.add(neighbouringCells.get(i));
-//            }
-//        }
-
-        return newPath;
+        return super.currentCell.computeNeighbour();
     }
 
+    /**
+     * Chooses the next Cell among the possible paths and takes actions based on the status of next Cell
+     */
     @Override
     public void action() {
+        //nextCell that is randomly chosen among the possible paths
         Cell nextCell = chooseCell(possiblePaths());
-        System.out.println("X: " + nextCell.x + "Y: " + nextCell.y);
 
-        if(nextCell != null){
-            if(nextCell.getPresence() == null){
+        if (nextCell != null) {
+            //if nextCell doesn't have any Life in it
+            if (nextCell.getPresence() == null) {
                 daysWithoutFood++;
-                System.out.println("daysWithoutFood in action:" + daysWithoutFood + ", herbIndex:" + herbIndex);
-                if(daysWithoutFood == maxDays){
+                //if it reaches maxDays without eating Plant, it dies
+                if (daysWithoutFood == MAX_DAYS) {
                     kill();
-                    System.out.println("NULL & kill called");
-                } else{
+                //if it doesn't reach maxDays yet, it moves to nextCell
+                } else {
                     move(nextCell);
                     update();
                 }
-            }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN
-            && !((Plant)nextCell.getPresence()).isSeed){
+            //if nextCell has Plant and it's not seeded at the current turn, then it eats the Plant
+            } else if (nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN
+                    && !((Plant) nextCell.getPresence()).isSeed) {
                 daysWithoutFood = 0;
                 eat(nextCell);
-                System.out.println("EAT, index:" + herbIndex);
                 update();
-            }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN
-            && ((Plant)nextCell.getPresence()).isSeed){
+            /* if nextCell has Plant and it's seeded at the current turn, then it stays and increases daysWithoutFood.
+               If it reaches maxDays after daysWithoutFood incremented, it dies.
+             */
+            } else if (nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN
+                    && ((Plant) nextCell.getPresence()).isSeed) {
                 daysWithoutFood++;
-                if(daysWithoutFood == maxDays){
+                if (daysWithoutFood == MAX_DAYS) {
                     kill();
-                    System.out.println("isSeed, kill called, index:" + herbIndex);
                 }
-            }else if(nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.YELLOW){
+            /* if nextCell has another Herbivore, then it stays and increases daysWithoutFood.
+               If it reaches maxDays after daysWithoutFood incremented, it dies.
+             */
+            } else if (nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.YELLOW) {
                 daysWithoutFood++;
-                if(daysWithoutFood == maxDays){
+                if (daysWithoutFood == MAX_DAYS) {
                     kill();
-                    System.out.println("Stay, kill called, index: " + herbIndex);
                 }
             }
         }
     }
 
-    private void kill(){
+    /**
+     * Kills this Herbivore by setting alive to false and its presence to null
+     */
+    private void kill() {
         this.alive = false;
         this.currentCell.setPresence(null);
         this.color = Color.WHITE;
     }
 
-    private void move(Cell nextCell){
-//        if(nextCell.x <= World.rows - 1 && nextCell.y <= World.cols - 1){
-            Herbivore herbivore = new Herbivore(nextCell);
-            herbivore.setDaysWithoutFood(daysWithoutFood);
-            herbivore.setHerbIndex(herbIndex);
-            nextCell.setPresence(herbivore);
-            nextCell.getPresence().setColor(Color.YELLOW);
-            nextCell.getPresence().setAlive(true);
-            if(daysWithoutFood >= 5){
-                System.out.println("DAYS WITHOUT FOOD OVER 5");
-                System.out.println("daysWithoutFood: " + ((Herbivore)nextCell.getPresence()).daysWithoutFood);
-            }
-//        }
+    /**
+     * moves to the nextCell
+     * @param nextCell Cell
+     */
+    private void move(Cell nextCell) {
+        Herbivore herbivore = new Herbivore(nextCell);
+        herbivore.setDaysWithoutFood(daysWithoutFood);
+        herbivore.setHerbIndex(herbIndex);
+        nextCell.setPresence(herbivore);
+        nextCell.getPresence().setColor(Color.YELLOW);
+        nextCell.getPresence().setAlive(true);
     }
 
-    private void setDaysWithoutFood(int daysWithoutFood){
+    /**
+     * Sets daysWithoutFood value
+     * @param daysWithoutFood int
+     */
+    private void setDaysWithoutFood(int daysWithoutFood) {
         this.daysWithoutFood = daysWithoutFood;
     }
 
-
-    private void eat(Cell nextCell){
-        if(nextCell.getPresence() != null && nextCell.getPresence().isAlive()){
+    /**
+     * Eats the Plant in the nextCell
+     * @param nextCell Cell
+     */
+    private void eat(Cell nextCell) {
+        if (nextCell.getPresence() != null && nextCell.getPresence().isAlive()) {
             nextCell.getPresence().setAlive(false);
             nextCell.setPresence(null);
         }
@@ -114,7 +129,6 @@ public class Herbivore extends Life{
         nextCell.setPresence(life);
         nextCell.getPresence().setColor(Color.YELLOW);
         nextCell.getPresence().setAlive(true);
-
     }
 
 }

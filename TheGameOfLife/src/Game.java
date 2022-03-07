@@ -5,16 +5,25 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Game extends JFrame {
+    /** World object that this Game object controls*/
     private World world;
 
+    /**
+     * Game Constructor
+     * @param world World
+     */
     public Game(World world){
         this.world = world;
     }
 
+    /**
+     * Initializes the game frame and implements a mouse listener for each turn
+     */
     public void init(){
-        int rows = this.world.getRows();
-        int cols = this.world.getCols();
+        int rows = World.rows;
+        int cols = World.cols;
 
+        setTitle("Game Of Life");
         setLayout(new GridLayout(rows, cols));
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++)
@@ -29,27 +38,27 @@ public class Game extends JFrame {
         });
     }
 
+    /**
+     * Initiates turns after each mouse click
+     */
     public void nextTurn() {
-        int rows = this.world.getRows();
-        int cols = this.world.getCols();
+        int rows = World.rows;
+        int cols = World.cols;
 
-        world.turns();
-
-//        ArrayList<Life> lives = world.firstTurn();
+        ArrayList<Life> lives = world.firstTurn();
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 this.world.getGrid(i, j).paintBackground();
             }
         }
-        System.out.println("---------------turn over-----------------");
 
-//        world.secondTurn(lives);
-//
-//        for (int i = 0; i < rows; i++) {
-//            for (int j = 0; j < cols; j++) {
-//                this.world.getGrid(i, j).paintBackground();
-//            }
-//        }
+        world.secondTurn(lives);
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                this.world.getGrid(i, j).paintBackground();
+            }
+        }
     }
 }
