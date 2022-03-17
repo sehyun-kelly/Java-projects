@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Herbivore extends Life {
+public class Herbivore extends Life implements CarnEddible, OmniEddible {
     /**Maximum days that Herbivore can live without eating Plant*/
     private final int MAX_DAYS = 5;
 
@@ -11,6 +11,10 @@ public class Herbivore extends Life {
     /**The index of this Herbivore*/
     public int herbIndex;
 
+    public Color color = Color.YELLOW;
+
+    public ArrayList<Neighbour> neighbours;
+
     /**
      * Herbivore constructor
      * @param cell Cell
@@ -19,12 +23,10 @@ public class Herbivore extends Life {
         super(cell, Color.yellow);
     }
 
-    /**
-     * Sets the index of this Herbivore
-     * @param x int
-     */
-    public void setHerbIndex(int x) {
-        this.herbIndex = x;
+
+    @Override
+    public Life giveBirth(Cell nextCell) {
+        return new Herbivore(nextCell);
     }
 
     /**
@@ -33,7 +35,26 @@ public class Herbivore extends Life {
      */
     @Override
     public ArrayList<Neighbour> possiblePaths() {
-        return super.currentCell.computeNeighbour();
+        this.neighbours = currentCell.computeNeighbour();
+        return this.neighbours;
+    }
+
+    @Override
+    public void countNeighbours() {
+        for(Neighbour a : neighbours){
+            Life neighbour = World.grid[a.x][a.y].getPresence();
+            if(neighbour == null){
+                numEmptyCells++;
+            }else{
+                if(neighbour instanceof Herbivore){
+                    numMates++;
+                }else if(neighbour instanceof HerbEddible){
+                    numFood++;
+                }else{
+                    numOccupied++;
+                }
+            }
+        }
     }
 
     /**
@@ -99,7 +120,6 @@ public class Herbivore extends Life {
     private void move(Cell nextCell) {
         Herbivore herbivore = new Herbivore(nextCell);
         herbivore.setDaysWithoutFood(daysWithoutFood);
-        herbivore.setHerbIndex(herbIndex);
         nextCell.setPresence(herbivore);
         nextCell.getPresence().setColor(Color.YELLOW);
         nextCell.getPresence().setAlive(true);
@@ -124,7 +144,6 @@ public class Herbivore extends Life {
         }
 
         Herbivore life = new Herbivore(nextCell);
-        life.setHerbIndex(herbIndex);
         life.setDaysWithoutFood(daysWithoutFood);
         nextCell.setPresence(life);
         nextCell.getPresence().setColor(Color.YELLOW);

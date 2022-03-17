@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.util.ArrayList;
 
-public class Plant extends Life {
+public class Plant extends Life implements HerbEddible, OmniEddible {
 
     /**Indicates if this Plant is seeded from another Plant*/
     public boolean isSeed = false;
@@ -12,6 +12,11 @@ public class Plant extends Life {
      */
     public Plant(Cell cell){
         super(cell, Color.GREEN);
+    }
+
+    @Override
+    public Life giveBirth(Cell nextCell) {
+        return null;
     }
 
     /**
@@ -52,6 +57,11 @@ public class Plant extends Life {
         }
 
         return newPath;
+    }
+
+    @Override
+    public void countNeighbours() {
+
     }
 
     /**

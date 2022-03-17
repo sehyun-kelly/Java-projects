@@ -45,15 +45,7 @@ public class Game extends JFrame {
         int rows = World.rows;
         int cols = World.cols;
 
-        ArrayList<Life> lives = world.firstTurn();
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                this.world.getGrid(i, j).paintBackground();
-            }
-        }
-
-        world.secondTurn(lives);
+        world.turn();
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {

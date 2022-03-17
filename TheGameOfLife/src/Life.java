@@ -11,6 +11,11 @@ public abstract class Life {
     /**Indicates the Cell in which this Life currently resides*/
     protected Cell currentCell;
 
+    public int numMates;
+    public int numFood;
+    public int numEmptyCells;
+    public int numOccupied;
+
     /**
      * Life Constructor
      * @param cell Cell
@@ -80,7 +85,20 @@ public abstract class Life {
         }
     }
 
+    public void giveBirth(int numMates, int numEmptycells, int numFood, Cell nextCell){
+        if(this.numMates >= numMates && this.numFood >= numFood
+                && this.numEmptyCells > numEmptycells){
+            Life newLife = giveBirth(nextCell);
+            nextCell.setPresence(newLife);
+            nextCell.getPresence().setAlive(true);
+        }
+    }
+
+    public abstract Life giveBirth(Cell nextCell);
+
     public abstract ArrayList<Neighbour> possiblePaths();
+
+    public abstract void countNeighbours();
 
     public abstract void action();
 

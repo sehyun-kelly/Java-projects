@@ -6,10 +6,16 @@ public class World {
     private static final int TOTAL = 100;
 
     /** number for random generator to indicate the chance of Herbivore creation*/
-    private static final int HERBIVORE_VALUE = 85;
+    private static final int HERBIVORE_VALUE = 80;
 
     /** number for random generator to indicate the chance of Plant creation*/
-    private static final int PLANT_VALUE = 65;
+    private static final int PLANT_VALUE = 60;
+
+    /** number for random generator to indicate the chance of Carnivore creation*/
+    private static final int CARNIVORE_VALUE = 50;
+
+    /** number for random generator to indicate the chance of Omnivore creation*/
+    private static final int OMNIVORE_VALUE = 45;
 
     /** total number of rows for this World */
     public static int rows;
@@ -46,16 +52,11 @@ public class World {
      */
     public void init() {
         RandomGenerator.reset();
-        int herbIndex = 0;
 
         for (int i = 0; i < World.rows; i++) {
             for (int j = 0; j < World.cols; j++) {
                 World.grid[i][j] = new Cell(i, j);
                 generateLife(World.grid[i][j]);
-                if(World.grid[i][j].getPresence()!= null && World.grid[i][j].getPresence().getColor() == Color.YELLOW){
-                    ((Herbivore)World.grid[i][j].getPresence()).setHerbIndex(herbIndex);
-                    herbIndex++;
-                }
             }
         }
     }
@@ -71,6 +72,10 @@ public class World {
             cell.setPresence(new Herbivore(cell));
         } else if (value >= PLANT_VALUE) {
             cell.setPresence(new Plant(cell));
+        } else if (value >= CARNIVORE_VALUE) {
+            cell.setPresence(new Carnivore(cell));
+        } else if (value >= OMNIVORE_VALUE) {
+            cell.setPresence(new Omnivore(cell));
         }
     }
 
@@ -78,42 +83,16 @@ public class World {
      * Controls the turn for Plant to seed first
      * @return lives as ArrayList<Life>
      */
-    public ArrayList<Life> firstTurn() {
-        resetSeed();
+    public void turn() {
         ArrayList<Life> lives = getAliveLife();
 
         for (int i = 0; i < lives.size(); i++) {
             Life currentLife = lives.get(i);
-            if(currentLife.getColor() == Color.GREEN){
-                takeAction(currentLife);
+            if(currentLife != null && currentLife.isAlive()){
+                currentLife.action();
+            }else{
+                currentLife.setAlive(false);
             }
-        }
-
-        return lives;
-    }
-
-    /**
-     * Controls the turn for Herbivores after Plant seeds
-     * @param lives ArrayList that stores the cells alive
-     */
-    public void secondTurn(ArrayList<Life> lives) {
-        for (int i = 0; i < lives.size(); i++) {
-            Life currentLife = lives.get(i);
-            if(currentLife.getColor() == Color.YELLOW){
-                takeAction(currentLife);
-            }
-        }
-    }
-
-    /**
-     * Runs actions for each Life
-     * @param life Life
-     */
-    private void takeAction(Life life) {
-        if (life != null && life.isAlive()) {
-            life.action();
-        } else {
-            life.setAlive(false);
         }
 
     }
@@ -138,16 +117,4 @@ public class World {
         return lives;
     }
 
-    /**
-     * Resets the status of isSeed variable of Plant before each firstTurn
-     */
-    private void resetSeed(){
-        for(int i = 0; i < World.rows; i++){
-            for(int j = 0; j < World.cols; j++){
-                if(World.grid[i][j].getPresence()!= null && World.grid[i][j].getPresence().getColor() == Color.GREEN){
-                    ((Plant)World.grid[i][j].getPresence()).setSeed(false);
-                }
-            }
-        }
-    }
 }

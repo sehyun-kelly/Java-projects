@@ -12,6 +12,16 @@ public class Cell extends JPanel {
     /** Life that resides in this Cell */
     public Life presence;
 
+    public int plantCount = 0;
+
+    public int herbCount = 0;
+
+    public int omniCount = 0;
+
+    public int carnCount = 0;
+
+    public int emptyCount = 0;
+
     /**
      * Cell Constructor
      * @param x x coordinate of current position
@@ -62,12 +72,29 @@ public class Cell extends JPanel {
                     Neighbour neighbour = new Neighbour(i, j);
                     if(i != this.x || j != this.y){
                         neighbourCells.add(neighbour);
+                        countNeighbours(i, j);
                     }
                 }
             }
         }
 
         return neighbourCells;
+    }
+
+    private void countNeighbours(int i, int j){
+        if(World.grid[i][j].getPresence() != null){
+            if(World.grid[i][j].getPresence() instanceof Plant){
+                plantCount++;
+            }else if (World.grid[i][j].getPresence() instanceof Herbivore){
+                herbCount++;
+            }else if (World.grid[i][j].getPresence() instanceof Omnivore){
+                omniCount++;
+            }else if (World.grid[i][j].getPresence() instanceof Carnivore){
+                carnCount++;
+            }
+        }else if (World.grid[i][j].getPresence() == null){
+            emptyCount++;
+        }
     }
 
     /**
