@@ -11,6 +11,8 @@ public abstract class Life {
     /**Indicates the Cell in which this Life currently resides*/
     protected Cell currentCell;
 
+    public int index;
+    public int daysWithoutFood = 0;
     public int numMates;
     public int numFood;
     public int numEmptyCells;
@@ -85,22 +87,40 @@ public abstract class Life {
         }
     }
 
-    public void giveBirth(int numMates, int numEmptycells, int numFood, Cell nextCell){
+    public boolean checkCondition(int numMates, int numEmptycells, int numFood){
         if(this.numMates >= numMates && this.numFood >= numFood
                 && this.numEmptyCells > numEmptycells){
-            Life newLife = giveBirth(nextCell);
-            nextCell.setPresence(newLife);
-            nextCell.getPresence().setAlive(true);
+            return true;
         }
+
+        return false;
     }
 
-    public abstract Life giveBirth(Cell nextCell);
+    public void setIndex(int n){
+        this.index = n;
+    }
+
+    public void kill() {
+        this.alive = false;
+        this.currentCell.setPresence(null);
+        this.color = Color.WHITE;
+    }
+
+    private void move(Cell nextCell, Life life) {
+        life.setIndex(this.index);
+        life.setDaysWithoutFood(daysWithoutFood);
+        nextCell.setPresence(life);
+    }
+
+    public void setDaysWithoutFood(int daysWithoutFood) {
+        this.daysWithoutFood = daysWithoutFood;
+    }
+
+    public abstract void giveBirth(Cell nextCell);
 
     public abstract ArrayList<Neighbour> possiblePaths();
 
     public abstract void countNeighbours();
 
     public abstract void action();
-
-
 }

@@ -6,10 +6,7 @@ public class Herbivore extends Life implements CarnEddible, OmniEddible {
     private final int MAX_DAYS = 5;
 
     /**Count of days passed without eating Plant*/
-    public int daysWithoutFood = 0;
-
-    /**The index of this Herbivore*/
-    public int herbIndex;
+//    public int daysWithoutFood = 0;
 
     public Color color = Color.YELLOW;
 
@@ -25,8 +22,8 @@ public class Herbivore extends Life implements CarnEddible, OmniEddible {
 
 
     @Override
-    public Life giveBirth(Cell nextCell) {
-        return new Herbivore(nextCell);
+    public void giveBirth(Cell nextCell) {
+        nextCell.setPresence(new Herbivore(nextCell));
     }
 
     /**
@@ -41,6 +38,11 @@ public class Herbivore extends Life implements CarnEddible, OmniEddible {
 
     @Override
     public void countNeighbours() {
+        numFood = 0;
+        numEmptyCells = 0;
+        numMates = 0;
+        numOccupied = 0;
+
         for(Neighbour a : neighbours){
             Life neighbour = World.grid[a.x][a.y].getPresence();
             if(neighbour == null){
@@ -64,53 +66,41 @@ public class Herbivore extends Life implements CarnEddible, OmniEddible {
     public void action() {
         //nextCell that is randomly chosen among the possible paths
         Cell nextCell = chooseCell(possiblePaths());
+        countNeighbours();
 
-        if (nextCell != null) {
-            //if nextCell doesn't have any Life in it
-            if (nextCell.getPresence() == null) {
+        if(nextCell != null){
+            if(nextCell.getPresence() == null){
                 daysWithoutFood++;
-                //if it reaches maxDays without eating Plant, it dies
-                if (daysWithoutFood == MAX_DAYS) {
+                System.out.print("daysWithoutFood: " + daysWithoutFood + " ");
+
+                if(daysWithoutFood == MAX_DAYS){
                     kill();
-                //if it doesn't reach maxDays yet, it moves to nextCell
-                } else {
-                    move(nextCell);
+                    System.out.println("Herb kill");
+                }else{
+                    if(checkCondition(1,2,2)){
+                        giveBirth(nextCell);
+                        System.out.println("Herb birth");
+                        nextCell.getPresence().setAlive(true);
+                    }else{
+                        move(nextCell);
+                        System.out.println("Herb move");
+                        update();
+                    }
+                }
+            }else{
+                if(nextCell.getPresence() instanceof HerbEddible){
+                    eat(nextCell);
+                    System.out.println("Herb eat");
                     update();
-                }
-            //if nextCell has Plant and it's not seeded at the current turn, then it eats the Plant
-            } else if (nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN
-                    && !((Plant) nextCell.getPresence()).isSeed) {
-                daysWithoutFood = 0;
-                eat(nextCell);
-                update();
-            /* if nextCell has Plant and it's seeded at the current turn, then it stays and increases daysWithoutFood.
-               If it reaches maxDays after daysWithoutFood incremented, it dies.
-             */
-            } else if (nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.GREEN
-                    && ((Plant) nextCell.getPresence()).isSeed) {
-                daysWithoutFood++;
-                if (daysWithoutFood == MAX_DAYS) {
-                    kill();
-                }
-            /* if nextCell has another Herbivore, then it stays and increases daysWithoutFood.
-               If it reaches maxDays after daysWithoutFood incremented, it dies.
-             */
-            } else if (nextCell.getPresence() != null && nextCell.getPresence().getColor() == Color.YELLOW) {
-                daysWithoutFood++;
-                if (daysWithoutFood == MAX_DAYS) {
-                    kill();
+                }else{
+                    daysWithoutFood++;
+                    System.out.println("Herb stay");
+                    if(daysWithoutFood == MAX_DAYS){
+                        kill();
+                    }
                 }
             }
         }
-    }
-
-    /**
-     * Kills this Herbivore by setting alive to false and its presence to null
-     */
-    private void kill() {
-        this.alive = false;
-        this.currentCell.setPresence(null);
-        this.color = Color.WHITE;
     }
 
     /**
@@ -119,19 +109,12 @@ public class Herbivore extends Life implements CarnEddible, OmniEddible {
      */
     private void move(Cell nextCell) {
         Herbivore herbivore = new Herbivore(nextCell);
+        herbivore.setIndex(this.index);
         herbivore.setDaysWithoutFood(daysWithoutFood);
         nextCell.setPresence(herbivore);
-        nextCell.getPresence().setColor(Color.YELLOW);
-        nextCell.getPresence().setAlive(true);
     }
 
-    /**
-     * Sets daysWithoutFood value
-     * @param daysWithoutFood int
-     */
-    private void setDaysWithoutFood(int daysWithoutFood) {
-        this.daysWithoutFood = daysWithoutFood;
-    }
+
 
     /**
      * Eats the Plant in the nextCell
@@ -144,10 +127,8 @@ public class Herbivore extends Life implements CarnEddible, OmniEddible {
         }
 
         Herbivore life = new Herbivore(nextCell);
-        life.setDaysWithoutFood(daysWithoutFood);
+        life.setIndex(this.index);
         nextCell.setPresence(life);
-        nextCell.getPresence().setColor(Color.YELLOW);
-        nextCell.getPresence().setAlive(true);
     }
 
 }

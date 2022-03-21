@@ -51,12 +51,17 @@ public class World {
      * Adds cells to this World and adds Life into each Cell
      */
     public void init() {
+        int num = 0;
         RandomGenerator.reset();
 
         for (int i = 0; i < World.rows; i++) {
             for (int j = 0; j < World.cols; j++) {
                 World.grid[i][j] = new Cell(i, j);
                 generateLife(World.grid[i][j]);
+                if(World.grid[i][j].getPresence() != null){
+                    World.grid[i][j].getPresence().index = num;
+                    num++;
+                }
             }
         }
     }
@@ -84,6 +89,7 @@ public class World {
      * @return lives as ArrayList<Life>
      */
     public void turn() {
+        System.out.println("-------------------------turn----------------------------");
         ArrayList<Life> lives = getAliveLife();
 
         for (int i = 0; i < lives.size(); i++) {
