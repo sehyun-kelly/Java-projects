@@ -1,16 +1,14 @@
 import java.awt.*;
-import java.util.ArrayList;
 
 public class Herbivore extends Life implements CarnEddible, OmniEddible {
     /**Maximum days that Herbivore can live without eating Plant*/
     private final int MAX_DAYS = 5;
 
     /**Count of days passed without eating Plant*/
-//    public int daysWithoutFood = 0;
+    public int daysWithoutFood = 0;
 
+    /**Color of Herbivore*/
     public Color color = Color.YELLOW;
-
-    public ArrayList<Neighbour> neighbours;
 
     /**
      * Herbivore constructor
@@ -20,22 +18,19 @@ public class Herbivore extends Life implements CarnEddible, OmniEddible {
         super(cell, Color.yellow);
     }
 
-
+    /**
+     * Gives birth
+     * @param nextCell Cell
+     */
     @Override
     public void giveBirth(Cell nextCell) {
         nextCell.setPresence(new Herbivore(nextCell));
+        nextCell.getPresence().setCreated(true);
     }
 
     /**
-     * Calculates possible paths that this Herbivore can move into
-     * @return the list of Neighbours
+     * Counts types of neighbouring cells
      */
-    @Override
-    public ArrayList<Neighbour> possiblePaths() {
-        this.neighbours = currentCell.computeNeighbour();
-        return this.neighbours;
-    }
-
     @Override
     public void countNeighbours() {
         numFood = 0;
@@ -64,71 +59,50 @@ public class Herbivore extends Life implements CarnEddible, OmniEddible {
      */
     @Override
     public void action() {
-        //nextCell that is randomly chosen among the possible paths
         Cell nextCell = chooseCell(possiblePaths());
         countNeighbours();
 
         if(nextCell != null){
             if(nextCell.getPresence() == null){
                 daysWithoutFood++;
-                System.out.print("daysWithoutFood: " + daysWithoutFood + " ");
 
                 if(daysWithoutFood == MAX_DAYS){
                     kill();
-                    System.out.println("Herb kill");
                 }else{
                     if(checkCondition(1,2,2)){
                         giveBirth(nextCell);
-                        System.out.println("Herb birth");
                         nextCell.getPresence().setAlive(true);
                     }else{
-                        move(nextCell);
-                        System.out.println("Herb move");
+                        Herbivore herbivore = new Herbivore(nextCell);
+                        herbivore.setDaysWithoutFood(this.daysWithoutFood);
+                        move(nextCell, herbivore);
                         update();
                     }
                 }
-            }else{
+            }else if(nextCell.getPresence() != null && !nextCell.getPresence().isCreated){
                 if(nextCell.getPresence() instanceof HerbEddible){
-                    eat(nextCell);
-                    System.out.println("Herb eat");
+                    Herbivore herbivore = new Herbivore(nextCell);
+                    eat(nextCell, herbivore);
                     update();
                 }else{
                     daysWithoutFood++;
-                    System.out.println("Herb stay");
                     if(daysWithoutFood == MAX_DAYS){
                         kill();
                     }
+                }
+            }else if(nextCell.getPresence() != null && nextCell.getPresence().isCreated){
+                daysWithoutFood++;
+
+                if(daysWithoutFood == MAX_DAYS) {
+                    kill();
                 }
             }
         }
     }
 
-    /**
-     * moves to the nextCell
-     * @param nextCell Cell
-     */
-    private void move(Cell nextCell) {
-        Herbivore herbivore = new Herbivore(nextCell);
-        herbivore.setIndex(this.index);
-        herbivore.setDaysWithoutFood(daysWithoutFood);
-        nextCell.setPresence(herbivore);
+    private void setDaysWithoutFood(int daysWithoutFood){
+        this.daysWithoutFood = daysWithoutFood;
     }
 
-
-
-    /**
-     * Eats the Plant in the nextCell
-     * @param nextCell Cell
-     */
-    private void eat(Cell nextCell) {
-        if (nextCell.getPresence() != null && nextCell.getPresence().isAlive()) {
-            nextCell.getPresence().setAlive(false);
-            nextCell.setPresence(null);
-        }
-
-        Herbivore life = new Herbivore(nextCell);
-        life.setIndex(this.index);
-        nextCell.setPresence(life);
-    }
 
 }

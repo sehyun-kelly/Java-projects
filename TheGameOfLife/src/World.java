@@ -1,33 +1,49 @@
-import java.awt.*;
 import java.util.ArrayList;
 
 public class World {
-    /** number for random generator to indicate total chance*/
+    /**
+     * number for random generator to indicate total chance
+     */
     private static final int TOTAL = 100;
 
-    /** number for random generator to indicate the chance of Herbivore creation*/
+    /**
+     * number for random generator to indicate the chance of Herbivore creation
+     */
     private static final int HERBIVORE_VALUE = 80;
 
-    /** number for random generator to indicate the chance of Plant creation*/
+    /**
+     * number for random generator to indicate the chance of Plant creation
+     */
     private static final int PLANT_VALUE = 60;
 
-    /** number for random generator to indicate the chance of Carnivore creation*/
+    /**
+     * number for random generator to indicate the chance of Carnivore creation
+     */
     private static final int CARNIVORE_VALUE = 50;
 
-    /** number for random generator to indicate the chance of Omnivore creation*/
+    /**
+     * number for random generator to indicate the chance of Omnivore creation
+     */
     private static final int OMNIVORE_VALUE = 45;
 
-    /** total number of rows for this World */
+    /**
+     * total number of rows for this World
+     */
     public static int rows;
 
-    /** total number of columns for this World */
+    /**
+     * total number of columns for this World
+     */
     public static int cols;
 
-    /** 2d array to store Cells for this World */
+    /**
+     * 2d array to store Cells for this World
+     */
     public static Cell[][] grid;
 
     /**
      * World Constructor
+     *
      * @param rows total number of rows for this World
      * @param cols total number of rows for this World
      */
@@ -39,6 +55,7 @@ public class World {
 
     /**
      * Returns the Cell at X = rows and Y = cols position
+     *
      * @param rows int
      * @param cols int
      * @return World.grid[rows][cols] as Cell
@@ -51,23 +68,19 @@ public class World {
      * Adds cells to this World and adds Life into each Cell
      */
     public void init() {
-        int num = 0;
         RandomGenerator.reset();
 
         for (int i = 0; i < World.rows; i++) {
             for (int j = 0; j < World.cols; j++) {
                 World.grid[i][j] = new Cell(i, j);
                 generateLife(World.grid[i][j]);
-                if(World.grid[i][j].getPresence() != null){
-                    World.grid[i][j].getPresence().index = num;
-                    num++;
-                }
             }
         }
     }
 
     /**
      * Generates Life based on the possibility to put into cell
+     *
      * @param cell Cell
      */
     private void generateLife(Cell cell) {
@@ -86,25 +99,82 @@ public class World {
 
     /**
      * Controls the turn for Plant to seed first
+     *
      * @return lives as ArrayList<Life>
      */
-    public void turn() {
-        System.out.println("-------------------------turn----------------------------");
+    public ArrayList<Life> plantTurn() {
+        resetCreated();
         ArrayList<Life> lives = getAliveLife();
 
         for (int i = 0; i < lives.size(); i++) {
             Life currentLife = lives.get(i);
-            if(currentLife != null && currentLife.isAlive()){
-                currentLife.action();
-            }else{
-                currentLife.setAlive(false);
+            if (currentLife instanceof Plant) {
+                takeAction(currentLife);
             }
+        }
+
+        return lives;
+    }
+
+    /**
+     * Controls the turn for Herbivores after Plant seeds
+     *
+     * @param lives ArrayList that stores the cells alive
+     */
+    public void herbTurn(ArrayList<Life> lives) {
+        for (int i = 0; i < lives.size(); i++) {
+            Life currentLife = lives.get(i);
+            if (currentLife instanceof Herbivore) {
+                takeAction(currentLife);
+            }
+        }
+    }
+
+    /**
+     * Controls the turn for Carnivores
+     *
+     * @param lives ArrayList that stores the cells alive
+     */
+    public void carnTurn(ArrayList<Life> lives) {
+        for (int i = 0; i < lives.size(); i++) {
+            Life currentLife = lives.get(i);
+            if (currentLife instanceof Carnivore) {
+                takeAction(currentLife);
+            }
+        }
+    }
+
+    /**
+     * Controls the turn for Omnivores
+     *
+     * @param lives ArrayList that stores the cells alive
+     */
+    public void omniTurn(ArrayList<Life> lives) {
+        for (int i = 0; i < lives.size(); i++) {
+            Life currentLife = lives.get(i);
+            if (currentLife instanceof Omnivore) {
+                takeAction(currentLife);
+            }
+        }
+    }
+
+    /**
+     * Runs actions for each Life
+     *
+     * @param life Life
+     */
+    private void takeAction(Life life) {
+        if (life != null && life.isAlive()) {
+            life.action();
+        } else {
+            life.setAlive(false);
         }
 
     }
 
     /**
      * Gets a list of Cells alive in this World
+     *
      * @return lives as ArrayList<Life>
      */
     private ArrayList<Life> getAliveLife() {
@@ -123,4 +193,13 @@ public class World {
         return lives;
     }
 
+    private void resetCreated() {
+        for (int i = 0; i < World.rows; i++) {
+            for (int j = 0; j < World.cols; j++) {
+                if(World.grid[i][j].getPresence() != null){
+                    World.grid[i][j].getPresence().setCreated(false);
+                }
+            }
+        }
+    }
 }

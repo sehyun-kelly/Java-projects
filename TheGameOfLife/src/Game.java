@@ -42,15 +42,23 @@ public class Game extends JFrame {
      * Initiates turns after each mouse click
      */
     public void nextTurn() {
+        ArrayList<Life> lives = world.plantTurn();
+        world.herbTurn(lives);
+        world.carnTurn(lives);
+        world.omniTurn(lives);
+
+        paintBackground();
+    }
+
+    private void paintBackground(){
         int rows = World.rows;
         int cols = World.cols;
-
-        world.turn();
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 this.world.getGrid(i, j).paintBackground();
             }
         }
+
     }
 }

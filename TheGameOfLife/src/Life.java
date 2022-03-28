@@ -11,12 +11,23 @@ public abstract class Life {
     /**Indicates the Cell in which this Life currently resides*/
     protected Cell currentCell;
 
-    public int index;
-    public int daysWithoutFood = 0;
-    public int numMates;
-    public int numFood;
-    public int numEmptyCells;
-    public int numOccupied;
+    /**Indicate whether this Life is created at this turn*/
+    protected boolean isCreated = false;
+
+    /**Number of the same type of Life in the neighbouring cells*/
+    protected int numMates;
+
+    /**Number of food in the neighbouring cells*/
+    protected int numFood;
+
+    /**Number of empty cells in the neighbouring cells*/
+    protected int numEmptyCells;
+
+    /**Number of cells occupied by the other types of Life in the neighbouring cells*/
+    protected int numOccupied;
+
+    /**List of neighbouring cells*/
+    public ArrayList<Neighbour> neighbours;
 
     /**
      * Life Constructor
@@ -87,6 +98,13 @@ public abstract class Life {
         }
     }
 
+    /**
+     * Checks if the birth condition is met
+     * @param numMates number of the same type of Life
+     * @param numEmptycells number of empty cells
+     * @param numFood number of food
+     * @return boolean
+     */
     public boolean checkCondition(int numMates, int numEmptycells, int numFood){
         if(this.numMates >= numMates && this.numFood >= numFood
                 && this.numEmptyCells > numEmptycells){
@@ -96,29 +114,57 @@ public abstract class Life {
         return false;
     }
 
-    public void setIndex(int n){
-        this.index = n;
-    }
-
+    /**
+     * Kills this Life and clear the Cell
+     */
     public void kill() {
         this.alive = false;
         this.currentCell.setPresence(null);
         this.color = Color.WHITE;
     }
 
-    private void move(Cell nextCell, Life life) {
-        life.setIndex(this.index);
-        life.setDaysWithoutFood(daysWithoutFood);
+    /**
+     * Moves the Life to the nextCell chosen
+     * @param nextCell Cell
+     * @param life Life
+     */
+    public void move(Cell nextCell, Life life) {
         nextCell.setPresence(life);
     }
 
-    public void setDaysWithoutFood(int daysWithoutFood) {
-        this.daysWithoutFood = daysWithoutFood;
+    /**
+     * Eats the food
+     * @param nextCell Cell
+     * @param life Life
+     */
+    public void eat(Cell nextCell, Life life) {
+        if (nextCell.getPresence() != null && nextCell.getPresence().isAlive()) {
+            nextCell.getPresence().setAlive(false);
+            nextCell.setPresence(null);
+        }
+
+        life.setCreated(true);
+        nextCell.setPresence(life);
+    }
+
+    /**
+     * Calculates the Neighbouring cells
+     * @return neighbours as ArrayList<Neighbour>
+     */
+    public ArrayList<Neighbour> possiblePaths(){
+        this.neighbours = currentCell.computeNeighbour();
+        return this.neighbours;
+    }
+
+    /**
+     * Sets isCreated value
+     * @param isCreated boolean
+     */
+    public void setCreated(boolean isCreated){
+        this.isCreated = isCreated;
     }
 
     public abstract void giveBirth(Cell nextCell);
-
-    public abstract ArrayList<Neighbour> possiblePaths();
 
     public abstract void countNeighbours();
 

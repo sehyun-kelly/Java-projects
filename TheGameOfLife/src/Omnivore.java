@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.ArrayList;
 
 public class Omnivore extends Life implements CarnEddible{
     /**Maximum days that Omnivore can live without eating Plant*/
@@ -8,25 +7,30 @@ public class Omnivore extends Life implements CarnEddible{
     /**Count of days passed without eating*/
     public int daysWithoutFood = 0;
 
+    /**Color of Omnivore*/
     public Color color = Color.BLUE;
 
-    public ArrayList<Neighbour> neighbours;
-
+    /**
+     * Omnivore constructor
+     * @param cell Cell
+     */
     public Omnivore(Cell cell){
         super(cell, Color.BLUE);
     }
 
+    /**
+     * Gives birth
+     * @param nextCell Cell
+     */
     @Override
     public void giveBirth(Cell nextCell) {
         nextCell.setPresence(new Omnivore(nextCell));
+        nextCell.getPresence().setCreated(true);
     }
 
-    @Override
-    public ArrayList<Neighbour> possiblePaths() {
-        this.neighbours = currentCell.computeNeighbour();
-        return this.neighbours;
-    }
-
+    /**
+     * Counts types of neighbouring cells
+     */
     @Override
     public void countNeighbours() {
         numFood = 0;
@@ -50,9 +54,11 @@ public class Omnivore extends Life implements CarnEddible{
         }
     }
 
+    /**
+     * Chooses the next Cell among the possible paths and takes actions based on the status of next Cell
+     */
     @Override
     public void action() {
-        //nextCell that is randomly chosen among the possible paths
         Cell nextCell = chooseCell(possiblePaths());
         countNeighbours();
 
@@ -64,18 +70,18 @@ public class Omnivore extends Life implements CarnEddible{
                 }else{
                     if(checkCondition(1,3,1)){
                         giveBirth(nextCell);
-                        System.out.println("Omni birth");
                         nextCell.getPresence().setAlive(true);
                     }else{
-                        move(nextCell);
-                        System.out.println("Omni move");
+                        Omnivore omnivore = new Omnivore(nextCell);
+                        omnivore.setDaysWithoutFood(this.daysWithoutFood);
+                        move(nextCell, omnivore);
                         update();
                     }
                 }
-            }else{
+            }else if(nextCell.getPresence() != null && !nextCell.getPresence().isCreated){
                 if(nextCell.getPresence() instanceof OmniEddible){
-                    eat(nextCell);
-                    System.out.println("Omni eat");
+                    Omnivore omnivore = new Omnivore(nextCell);
+                    eat(nextCell, omnivore);
                     update();
                 }else{
                     daysWithoutFood++;
@@ -83,41 +89,18 @@ public class Omnivore extends Life implements CarnEddible{
                         kill();
                     }
                 }
+            }else if(nextCell.getPresence() != null && nextCell.getPresence().isCreated){
+                daysWithoutFood++;
+
+                if(daysWithoutFood == MAX_DAYS) {
+                    kill();
+                }
             }
         }
     }
 
-    /**
-     * moves to the nextCell
-     * @param nextCell Cell
-     */
-    private void move(Cell nextCell) {
-        Omnivore omnivore = new Omnivore(nextCell);
-        omnivore.setIndex(this.index);
-        omnivore.setDaysWithoutFood(daysWithoutFood);
-        nextCell.setPresence(omnivore);
-    }
-
-    /**
-     * Sets daysWithoutFood value
-     * @param daysWithoutFood int
-     */
-    private void setDaysWithoutFood(int daysWithoutFood) {
+    private void setDaysWithoutFood(int daysWithoutFood){
         this.daysWithoutFood = daysWithoutFood;
     }
 
-    /**
-     * Eats the Plant in the nextCell
-     * @param nextCell Cell
-     */
-    private void eat(Cell nextCell) {
-        if (nextCell.getPresence() != null && nextCell.getPresence().isAlive()) {
-            nextCell.getPresence().setAlive(false);
-            nextCell.setPresence(null);
-        }
-
-        Omnivore life = new Omnivore(nextCell);
-        life.setIndex(this.index);
-        nextCell.setPresence(life);
-    }
 }
